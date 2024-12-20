@@ -26,19 +26,11 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Example() {
+export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
     <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-white">
-        <body class="h-full">
-        ```
-      */}
       <div>
         <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
           <DialogBackdrop
@@ -93,34 +85,6 @@ export default function Example() {
           </div>
         </Dialog>
 
-        {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:block lg:w-20 lg:overflow-y-auto lg:bg-gray-900 lg:pb-4">
-          <div className="flex h-16 shrink-0 items-center justify-center">
-            <img
-              alt="Your Company"
-              src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
-              className="h-8 w-auto"
-            />
-          </div>
-          <nav className="mt-8">
-            <ul role="list" className="flex flex-col items-center space-y-1">
-              {navigation.map((item) => (
-                <li key={item.name}>
-                  <a
-                    href={item.href}
-                    className={classNames(
-                      item.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white',
-                      'group flex gap-x-3 rounded-md p-3 text-sm/6 font-semibold',
-                    )}
-                  >
-                    <item.icon aria-hidden="true" className="size-6 shrink-0" />
-                    <span className="sr-only">{item.name}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
 
         <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
           <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400 lg:hidden">
@@ -144,7 +108,8 @@ export default function Example() {
           </div>
         </main>
 
-        <aside className="fixed inset-y-0 left-20 hidden w-96 overflow-y-auto border-r border-gray-200 px-4 py-6 sm:px-6 lg:px-8 xl:block">
+        <aside className="fixed inset-y-0 left-20 hidden w-96 overflow-y-auto border-r border-slate-400 px-4 py-6 sm:px-6 lg:px-8 lg:block">
+          <p>hello!</p>
           {/* Secondary column (hidden on smaller screens) */}
         </aside>
       </div>
