@@ -123,7 +123,7 @@ export default function Home() {
             <span className="sr-only">Open sidebar</span>
             <Bars3Icon aria-hidden="true" className="size-6" />
           </button>
-          <div className="flex-1 text-sm/6 font-semibold text-white"></div>
+          <div className="flex-1 text-sm/6 font-semibold text-white">Dashboard</div>
           <a href="#">
             <span className="sr-only">Your profile</span>
             <img
@@ -136,7 +136,52 @@ export default function Home() {
 
         <main className="lg:pl-20">
           <div className="xl:pl-96">
-            <div className="px-4 py-10 sm:px-6 lg:px-8 lg:py-6">{/* Main area */}</div>
+            <div className="px-4 py-10 sm:px-6 lg:px-8 lg:py-6 h-screen flex flex-col">
+              {/* Chat Messages Area */}
+              <div className="flex-1 overflow-y-auto space-y-4 pb-4">
+                {/* Example messages - you'll want to map through your actual messages */}
+                {/* Received Message */}
+                <div className="flex items-start space-x-3">
+                  <img
+                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    alt=""
+                    className="size-8 rounded-full"
+                  />
+                  <div className="bg-slate-400 rounded-2xl rounded-tl-none px-4 py-2 max-w-[80%]">
+                    <p className="text-gray-900">This is a received message</p>
+                  </div>
+                </div>
+
+                {/* Sent Message */}
+                <div className="flex justify-end">
+                  <div className="bg-sky-500 rounded-2xl rounded-tr-none px-4 py-2 max-w-[80%]">
+                    <p className="text-white">This is a sent message</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chat Input Area */}
+              <div className="border-t border-gray-200 px-4 py-4 sm:mb-0">
+                <div className="relative flex-1 overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-sky-500">
+                  <textarea
+                    rows={1}
+                    className="block w-full resize-none border-0 bg-transparent py-1.5 text-white placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                    placeholder="Type your message..."
+                  />
+                  <div className="py-2 pl-3 pr-2" aria-hidden="true">
+                    <div className="h-9" />
+                  </div>
+                  <div className="absolute right-0 bottom-0 flex justify-between py-2 pl-3 pr-2">
+                    <button
+                      type="submit"
+                      className="rounded-md bg-sky-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+                    >
+                      Send
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </main>
 
