@@ -135,7 +135,7 @@ export default function Home() {
         </div>
 
         <main className="lg:pl-20">
-          <div className="xl:pl-96">
+          <div className="lg:pl-96">
             <div className="px-4 py-10 sm:px-6 lg:px-8 lg:py-6 h-screen flex flex-col">
               {/* Chat Header */}
               <div className="pb-4 mb-4 border-b border-gray-700">
