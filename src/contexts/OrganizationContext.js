@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
-const OrganizationContext = createContext();
+export const OrganizationContext = createContext();
 
 const LOCAL_STORAGE_KEY = "currentOrganization";
 

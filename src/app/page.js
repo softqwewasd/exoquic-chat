@@ -1,15 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessui/react'
 import {
   Bars3Icon,
-  PlusIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { useOrganizations } from '@/hooks/useOrganizations'
 import { useOrganizationMembers } from '@/hooks/useOrganizationMembers'
 import { useTeams } from '@/hooks/useTeams'
+import { useCurrentOrganization } from '@/hooks/useCurrentOrganization'
 
 
 export default function Home() {
@@ -17,10 +17,15 @@ export default function Home() {
   const organizations = useOrganizations();
   const members = useOrganizationMembers(organizations[0]?.id);
   const teams = useTeams(organizations[0]?.id);
+  const { currentOrganization, setCurrentOrganization } = useCurrentOrganization();
 
-  console.log(teams);
+  useEffect(() => {
+    if (!currentOrganization && organizations.length > 0) {
+      setCurrentOrganization(organizations[0]);
+    }
+  }, [currentOrganization, organizations]);
 
-  console.log(members);
+  console.log("This is the current organization", currentOrganization);
 
   return (
     <>
