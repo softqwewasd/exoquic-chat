@@ -9,12 +9,16 @@ import {
 } from '@heroicons/react/24/outline'
 import { useOrganizations } from '@/hooks/useOrganizations'
 import { useOrganizationMembers } from '@/hooks/useOrganizationMembers'
+import { useTeams } from '@/hooks/useTeams'
 
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const organizations = useOrganizations();
   const members = useOrganizationMembers(organizations[0]?.id);
+  const teams = useTeams(organizations[0]?.id);
+
+  console.log(teams);
 
   console.log(members);
 
@@ -73,27 +77,16 @@ export default function Home() {
                 {/* Groups Header */}
                 <div className="flex justify-between items-center">
                   <h3 className="text-white text-sm font-semibold">Groups</h3>
-                  <button
-                    type="button"
-                    className="rounded-full p-1 text-sky-500 hover:bg-gray-800 transition-colors duration-200"
-                  >
-                    <PlusIcon className="size-5" />
-                  </button>
                 </div>
 
                 {/* Groups List */}
                 <div className="space-y-1">
-                  {[
-                    'Engineering Team',
-                    'Marketing Team',
-                    'Sales Team',
-                    'Design Team',
-                  ].map((group) => (
+                  {teams.map((team) => (
                     <button
-                      key={group}
+                      key={team.id}
                       className="w-full rounded-md px-3 py-2 text-left text-white text-sm hover:bg-gray-800 transition-colors duration-200"
                     >
-                      {group}
+                      {team.name}
                     </button>
                   ))}
                 </div>
@@ -207,27 +200,16 @@ export default function Home() {
           {/* Groups Header */}
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-white text-sm font-semibold">Channels</h3>
-            <button
-              type="button"
-              className="rounded-full p-1 text-sky-500 hover:bg-gray-800 transition-colors duration-200"
-            >
-              <PlusIcon className="size-5" />
-            </button>
           </div>
 
           {/* Groups List */}
           <div className="space-y-1">
-            {[
-              'Engineering Team',
-              'Marketing Team',
-              'Sales Team',
-              'Design Team',
-            ].map((group) => (
+            {teams.map((team) => (
               <button
-                key={group}
+                key={team.id}
                 className="w-full rounded-md px-3 py-2 text-left text-white text-sm hover:bg-gray-800 transition-colors duration-200"
               >
-                {group}
+                {team.name}
               </button>
             ))}
           </div>
