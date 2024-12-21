@@ -1,4 +1,5 @@
 import "./globals.css";
+import Providers from '@/components/Providers'
 
 export const metadata = {
   title: "Create Next App",
@@ -9,7 +10,9 @@ export default function RootLayout({ children }) {
   return (
     <html className="h-full bg-gray-900/80">
       <body className="h-full bg-gray-900/80">
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
