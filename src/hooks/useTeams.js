@@ -24,12 +24,12 @@ export function useTeams(orgId) {
 			return;
 		}
 
-		const fetchTeams = async () => {
+		const fetchTeams_ = async () => {
 			const teams = await fetchTeams(orgId, session.accessToken);
 			setTeams(teams);
 		}
 
-		fetchTeams();
+		fetchTeams_();
 
 	}, [session, status, orgId]);
 
