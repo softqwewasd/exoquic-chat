@@ -8,14 +8,15 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { useOrganizations } from '@/hooks/useOrganizations'
+import { useOrganizationMembers } from '@/hooks/useOrganizationMembers'
 
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-
   const organizations = useOrganizations();
+  const members = useOrganizationMembers(organizations[0]?.id);
 
-  console.log(organizations);
+  console.log(members);
 
   return (
     <>
@@ -44,9 +45,9 @@ export default function Home() {
                 {/* Organization Dropdown */}
                 <div className="relative pt-5">
                   <select className="w-full bg-gray-900 text-white text-lg font-semibold py-2 px-3 border border-gray-700 rounded-md appearance-none cursor-pointer hover:bg-gray-800 transition-colors duration-200">
-                    <option value="org1" className="bg-gray-900">Organization 1</option>
-                    <option value="org2" className="bg-gray-900">Organization 2</option>
-                    <option value="org3" className="bg-gray-900">Organization 3</option>
+                    {organizations.map((org) => (
+                      <option key={org.id} value={org.id} className="bg-gray-900">{org.login}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -55,16 +56,13 @@ export default function Home() {
 
                 {/* Users List */}
                 <div className="space-y-1">
-                  {[
-                    { name: 'John Doe', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' },
-                    { name: 'Jane Smith', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' },
-                  ].map((user) => (
+                  {members.map((member) => (
                     <button
-                      key={user.name}
+                      key={member.id}
                       className="flex w-full items-center space-x-3 rounded-md px-3 py-2 text-left hover:bg-gray-800 transition-colors duration-200"
                     >
-                      <img src={user.avatar} alt="" className="size-8 rounded-full" />
-                      <span className="text-white text-sm">{user.name}</span>
+                      <img src={member.avatar_url} alt="" className="size-8 rounded-full" />
+                      <span className="text-white text-sm">{member.login}</span>
                     </button>
                   ))}
                 </div>
@@ -181,9 +179,9 @@ export default function Home() {
           {/* Organization Dropdown */}
           <div className="relative">
             <select className="w-full bg-gray-900 text-white text-lg font-semibold py-2 px-3 border border-white/20 rounded-md appearance-none cursor-pointer hover:bg-gray-800 transition-colors duration-200">
-              <option value="org1" className="bg-gray-900">Organization 1</option>
-              <option value="org2" className="bg-gray-900">Organization 2</option>
-              <option value="org3" className="bg-gray-900">Organization 3</option>
+              {organizations.map((org) => (
+                <option key={org.id} value={org.id} className="bg-gray-900">{org.login}</option>
+              ))}
             </select>
           </div>
 
@@ -192,16 +190,13 @@ export default function Home() {
 
           {/* Users List */}
           <div className="space-y-1">
-            {[
-              { name: 'John Doe', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' },
-              { name: 'Jane Smith', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' },
-            ].map((user) => (
+            {members.map((member) => (
               <button
-                key={user.name}
+                key={member.id}
                 className="flex w-full items-center space-x-3 rounded-md px-3 py-2 text-left hover:bg-gray-800 transition-colors duration-200"
               >
-                <img src={user.avatar} alt="" className="size-8 rounded-full" />
-                <span className="text-white text-sm">{user.name}</span>
+                <img src={member.avatar_url} alt="" className="size-8 rounded-full" />
+                <span className="text-white text-sm">{member.login}</span>
               </button>
             ))}
           </div>
