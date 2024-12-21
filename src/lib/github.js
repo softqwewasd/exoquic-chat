@@ -38,3 +38,43 @@ export async function fetchPermissionGrantedOrgs(token) {
 	console.log("These are the orgs, ", orgs);
 	return orgs
 }
+
+export async function fetchOrgMembers(orgId, token) {
+	const response = await fetch(url(`orgs/${orgId}/members`), {
+		method: "GET",
+		headers: {
+			"Authorization": `Bearer ${token}`,
+			"X-GitHub-Api-Version": "2022-11-28"
+		}
+	});
+
+	if (response.status != 200) {
+		const errorBody = await response.json();
+		const errorMessage = errorBody.message;
+		const status = response.status;
+		throw new HttpError(errorMessage, status);
+	}
+
+	const members = await response.json();
+	return members;
+}
+
+export async function fetchTeams(orgId, token) {
+	const response = await fetch(url(`orgs/${orgId}/teams`), {
+		method: "GET",
+		headers: {
+			"Authorization": `Bearer ${token}`,
+			"X-GitHub-Api-Version": "2022-11-28"
+		}
+	});
+
+	if (response.status != 200) {
+		const errorBody = await response.json();
+		const errorMessage = errorBody.message;
+		const status = response.status;
+		throw new HttpError(errorMessage, status);
+	}
+
+	const teams = await response.json();
+	return teams;
+}
