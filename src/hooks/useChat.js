@@ -62,6 +62,7 @@ export function useChat() {
 
 		return () => {
 			if (subscriber) {
+				console.log("Unsubscribing from chat messages for", member.login);
 				subscriber.unsubscribe();
 			}
 			setChatMessages([]);
