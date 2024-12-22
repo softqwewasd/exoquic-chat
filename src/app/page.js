@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessui/react'
 import {
   Bars3Icon,
@@ -10,7 +10,6 @@ import { useOrganizations } from '@/hooks/useOrganizations'
 import { useOrganizationMembers } from '@/hooks/useOrganizationMembers'
 import { useTeams } from '@/hooks/useTeams'
 import { useCurrentOrganization } from '@/hooks/useCurrentOrganization'
-import { useSearchParams } from 'next/navigation'
 import { useChat } from '@/hooks/useChat'
 import { useSession } from 'next-auth/react'
 import { v4 as uuidv4 } from 'uuid';
@@ -23,12 +22,17 @@ export default function Home() {
   const teams = useTeams(organizations[0]?.id);
   const { currentOrganization, setCurrentOrganization } = useCurrentOrganization();
   const { chattingWithUser, chatMessages, sendMessage } = useChat();
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     if (!currentOrganization && organizations.length > 0) {
       setCurrentOrganization(organizations[0]);
     }
   }, [currentOrganization, organizations]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
 
   return (
     <>
@@ -134,19 +138,18 @@ export default function Home() {
                 <div className="flex items-center space-x-3">
                   {/* Avatar (for user chats) */}
                   <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    src={chattingWithUser?.avatar_url}
                     alt=""
                     className="size-10 rounded-full"
                   />
                   <div>
-                    <h2 className="text-lg font-semibold text-white">John Doe</h2>
-                    <p className="text-sm text-gray-400">Online</p>
+                    <h2 className="text-lg font-semibold text-white">{chattingWithUser?.login}</h2>
                   </div>
                 </div>
               </div>
 
               {/* Chat Messages Area */}
-              <div className="flex-1 overflow-y-auto space-y-4 pb-4">
+              <div className="flex-1 overflow-y-auto space-y-4 pb-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-900 [&::-webkit-scrollbar-thumb]:rounded-full">
                 {/* Example messages - you'll want to map through your actual messages */}
                 {/* Received Message */}
                 {chatMessages.map((chatMessage) => {
@@ -167,13 +170,14 @@ export default function Home() {
                     )
                   }
                   return (
-                    <div className="flex justify-end" key={uuidv4()}>
+                    <div className="flex justify-end mr-2" key={uuidv4()}>
                       <div className="bg-sky-500 rounded-2xl rounded-tr-none px-4 py-2 max-w-[80%]">
                         <p className="text-white">{chatMessage.message}</p>
                       </div>
                     </div>
                   );
                 })}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* Chat Input Area */}
