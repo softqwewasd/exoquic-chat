@@ -10,6 +10,8 @@ import { useOrganizations } from '@/hooks/useOrganizations'
 import { useOrganizationMembers } from '@/hooks/useOrganizationMembers'
 import { useTeams } from '@/hooks/useTeams'
 import { useCurrentOrganization } from '@/hooks/useCurrentOrganization'
+import { useSearchParams } from 'next/navigation'
+import { useChat } from '@/hooks/useChat'
 
 
 export default function Home() {
@@ -18,6 +20,7 @@ export default function Home() {
   const members = useOrganizationMembers(organizations[0]?.id);
   const teams = useTeams(organizations[0]?.id);
   const { currentOrganization, setCurrentOrganization } = useCurrentOrganization();
+  const { chattingWithUser, chatMessages } = useChat();
 
   useEffect(() => {
     if (!currentOrganization && organizations.length > 0) {
@@ -68,6 +71,12 @@ export default function Home() {
                   {members.map((member) => (
                     <button
                       key={member.id}
+                      onClick={() => {
+                        // Using the built-in Next.js router
+                        const searchParams = new URLSearchParams(window.location.search);
+                        searchParams.set('chattingWithUser', member.login);
+                        window.history.pushState(null, '', `?${searchParams.toString()}`);
+                      }}
                       className="flex w-full items-center space-x-3 rounded-md px-3 py-2 text-left hover:bg-gray-800 transition-colors duration-200"
                     >
                       <img src={member.avatar_url} alt="" className="size-8 rounded-full" />
@@ -191,6 +200,12 @@ export default function Home() {
             {members.map((member) => (
               <button
                 key={member.id}
+                onClick={() => {
+                  // Using the built-in Next.js router
+                  const searchParams = new URLSearchParams(window.location.search);
+                  searchParams.set('chattingWithUser', member.login);
+                  window.history.pushState(null, '', `?${searchParams.toString()}`);
+                }}
                 className="flex w-full items-center space-x-3 rounded-md px-3 py-2 text-left hover:bg-gray-800 transition-colors duration-200"
               >
                 <img src={member.avatar_url} alt="" className="size-8 rounded-full" />
