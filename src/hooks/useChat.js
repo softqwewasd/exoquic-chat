@@ -63,5 +63,12 @@ export function useChat() {
 
   }, [currentOrganization, searchParams, members]);
 
-  return { chattingWithUser, chatMessages };
+	const sendMessage = async (message) => {
+		await fetch("/api/v1/send-message", {
+			method: "POST",
+			body: JSON.stringify({ organizationId: currentOrganization.id, username: chattingWithUser.login, message }),
+		});
+	};
+
+  return { chattingWithUser, chatMessages, sendMessage };
 }

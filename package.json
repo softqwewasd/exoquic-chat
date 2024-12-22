@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@exoquic/auth": "^1.1.0",
+    "@exoquic/pub": "^1.0.2",
     "@exoquic/sub": "^1.0.6",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",

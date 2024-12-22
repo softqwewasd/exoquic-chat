@@ -20,15 +20,13 @@ export default function Home() {
   const members = useOrganizationMembers(organizations[0]?.id);
   const teams = useTeams(organizations[0]?.id);
   const { currentOrganization, setCurrentOrganization } = useCurrentOrganization();
-  const { chattingWithUser, chatMessages } = useChat();
+  const { chattingWithUser, chatMessages, sendMessage } = useChat();
 
   useEffect(() => {
     if (!currentOrganization && organizations.length > 0) {
       setCurrentOrganization(organizations[0]);
     }
   }, [currentOrganization, organizations]);
-
-  console.log("This is the current organization", currentOrganization);
 
   return (
     <>
@@ -174,7 +172,16 @@ export default function Home() {
                   <textarea
                     rows={2}
                     className="block w-full resize-none border-0 bg-transparent py-3 px-3 text-white placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                    placeholder="Type your message... (Press Enter to send)"
+                    placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        if (!e.shiftKey) {
+                          e.preventDefault(); // Prevent default enter behavior
+                          // Assuming you have a sendMessage function
+                          sendMessage(e.target.value);
+                        }
+                      }
+                    }}
                   />
                 </div>
               </div>

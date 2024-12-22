@@ -17,7 +17,6 @@ export const authOptions = {
     async jwt({ token, account, profile }) {
 			// Persist the access token and profile info right after signin
 			if (account && profile) {
-				console.log("THIS IS THE TOKEN:", token);
 				return { ...token, accessToken: account.access_token, login: profile.login };
 			}
 			return token;
@@ -26,7 +25,6 @@ export const authOptions = {
 			// Send properties to the client
 			session.accessToken = token.accessToken;
 			session.user.login = token.login;
-			console.log("THIS IS THE SESSION:", session);
 			return { ...session, accessToken: token.accessToken };
 		},
 	},

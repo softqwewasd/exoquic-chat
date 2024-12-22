@@ -18,14 +18,13 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-		const user = await fetchUser(session.accessToken);
-    console.log("user", user);
+		const thisUser = await fetchUser(session.accessToken);
 
     const { organizationId, username } = await request.json();
-    console.log("session", session);
-    const usernames = [session.user.login, username].sort();
+
+    const usernames = [thisUser.login, username].sort();
     const channel = `chat-for-${organizationId}-between-users-${usernames[0]}-and-${usernames[1]}`;
-    const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat", channel: channel });
+    const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat", channel });
     
     return NextResponse.json({ subscriptionToken });
   } catch (error) { 
