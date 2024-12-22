@@ -12,9 +12,11 @@ import { useTeams } from '@/hooks/useTeams'
 import { useCurrentOrganization } from '@/hooks/useCurrentOrganization'
 import { useSearchParams } from 'next/navigation'
 import { useChat } from '@/hooks/useChat'
-
+import { useSession } from 'next-auth/react'
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Home() {
+  const { data: session } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const organizations = useOrganizations();
   const members = useOrganizationMembers(organizations[0]?.id);
@@ -147,23 +149,31 @@ export default function Home() {
               <div className="flex-1 overflow-y-auto space-y-4 pb-4">
                 {/* Example messages - you'll want to map through your actual messages */}
                 {/* Received Message */}
-                <div className="flex items-start space-x-3">
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                    className="size-8 rounded-full"
-                  />
-                  <div className="bg-slate-400 rounded-2xl rounded-tl-none px-4 py-2 max-w-[80%]">
-                    <p className="text-gray-900">This is a received message</p>
-                  </div>
-                </div>
+                {chatMessages.map((chatMessage) => {
+                  const isReceivedMessage = chatMessage.from !== session.user.login;
 
-                {/* Sent Message */}
-                <div className="flex justify-end">
-                  <div className="bg-sky-500 rounded-2xl rounded-tr-none px-4 py-2 max-w-[80%]">
-                    <p className="text-white">This is a sent message</p>
-                  </div>
-                </div>
+                  if (isReceivedMessage) {
+                    return (
+                      <div className="flex items-start space-x-3" key={uuidv4()}>
+                        <img
+                          src={chatMessage.from.avatar_url}
+                          alt=""
+                          className="size-8 rounded-full"
+                        />
+                        <div className="bg-slate-400 rounded-2xl rounded-tl-none px-4 py-2 max-w-[80%]">
+                          <p className="text-gray-900" key={index}>{chatMessage.message}</p>
+                        </div>
+                      </div>
+                    )
+                  }
+                  return (
+                    <div className="flex justify-end" key={uuidv4()}>
+                      <div className="bg-sky-500 rounded-2xl rounded-tr-none px-4 py-2 max-w-[80%]">
+                        <p className="text-white">{chatMessage.message}</p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Chat Input Area */}

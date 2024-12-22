@@ -32,26 +32,25 @@ export function useChat() {
 		const chattingWithUser = searchParams.get('chattingWithUser');
 		if (!chattingWithUser) return;
 
-		console.log("Chatting with user (unknown)", chattingWithUser);
 		// Make sure the user is a member of the organization
 		const member = members.find(member => member.login === chattingWithUser);
 		if (!member) return;
 
-		console.log("Chatting with user", member.login);
-
 		setChattingWithUser(member);
 
+		let subscriber;
 		// Get chat messages from exoquic
 		const getChatMessages = async () => {
       try {
 				console.log("Getting chat messages for", member.login);
-				const subscriber = await subscriptionManager.authorizeSubscriber({
+				subscriber = await subscriptionManager.authorizeSubscriber({
 					organizationId: currentOrganization.id,
 					username: member.login,
 				});
 
 				subscriber.subscribe(chatMessage => {
-					setChatMessages(prevMessages => [...prevMessages, chatMessage]);
+					console.log("Chat message received", chatMessage.data);
+					setChatMessages(prevMessages => [...prevMessages, JSON.parse(chatMessage.data)]);
 				});
 
       } catch (error) {
@@ -60,6 +59,14 @@ export function useChat() {
     };
 
     getChatMessages(); // Fetch the subscription token
+
+		return () => {
+			if (subscriber) {
+				subscriber.unsubscribe();
+			}
+			setChatMessages([]);
+			setChattingWithUser(null);
+		}
 
   }, [currentOrganization, searchParams, members]);
 
