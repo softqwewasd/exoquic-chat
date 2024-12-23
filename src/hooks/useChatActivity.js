@@ -12,9 +12,12 @@ export function useChatActivity() {
 	const { currentOrganization } 	= useCurrentOrganization();
 	const members 									= useOrganizationMembers(currentOrganization?.id);
 
-	// Whether the user is typing, sends an chat-activity to the server
+	// Whether this user is typing, sends an chat-activity to the server
 	// when the state changes.
 	const [isTyping, setIsTyping] 	= useState(false);
+
+	// Whether the user they're chatting with is typing
+	const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
 
 	// useEffect for subscribing to the chat activity topic
 	useEffect(() => {
@@ -38,7 +41,10 @@ export function useChatActivity() {
 			});
 
 			chatActivitySubscriber.subscribe(chatActivity => {
-				console.log("Chat activity received", chatActivity.data);
+				const activityData = JSON.parse(chatActivity.data);
+				if (activityData.by === chattingWithUser) {
+					setIsOtherUserTyping(activityData.activity === "typing-started");
+				}
 			});
 		};
 
@@ -53,7 +59,7 @@ export function useChatActivity() {
 			setIsTyping(false);
 		};
 
-	}, [currentOrganization, session?.user?.login]);
+	}, [currentOrganization, searchParams, members]);
 
 	// useEffect for sending a chat-activity to Exoquic when the user starts or stops typing
 	useEffect(() => {
@@ -77,6 +83,7 @@ export function useChatActivity() {
 
 	return {
 		isTyping,
+		isOtherUserTyping,
 		setIsTyping
 	}
 }

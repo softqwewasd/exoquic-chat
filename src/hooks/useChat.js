@@ -56,28 +56,10 @@ export function useChat() {
 
     getChatMessages(); // Fetch the subscription token for chat messages
 
-		const getChatActivity = async () => {
-			chatActivitySubscriber = await subscriptionManager.authorizeSubscriber({
-				organizationId: currentOrganization.id,
-				username: session.user.login,
-				topic: "chat-activity",
-			});
-
-			chatActivitySubscriber.subscribe(chatActivity => {
-				console.log("Chat activity received", chatActivity.data);
-			});
-		};
-
-		getChatActivity(); // Fetch the subscription token for chat activity
-
 		return () => {
 			if (chatMessagesSubscriber) {
 				console.log("Unsubscribing from chat messages for", member.login);
 				chatMessagesSubscriber.unsubscribe();
-			}
-			if (chatActivitySubscriber) {
-				console.log("Unsubscribing from chat activity for", session.user.login);
-				chatActivitySubscriber.unsubscribe();
 			}
 			setChatMessages([]);
 			setChattingWithUser(null);

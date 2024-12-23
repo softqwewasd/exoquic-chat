@@ -24,7 +24,7 @@ export default function Home() {
   const teams = useTeams(organizations[0]?.id);
   const { currentOrganization, setCurrentOrganization } = useCurrentOrganization();
   const { chattingWithUser, chatMessages, sendMessage } = useChat();
-  const { isTyping, setIsTyping } = useChatActivity();
+  const { setIsTyping, isOtherUserTyping } = useChatActivity();
   const messagesEndRef = useRef(null);
   const { onInput } = useTypingIndicator({
     onTypingChange: setIsTyping,
@@ -188,7 +188,7 @@ export default function Home() {
               </div>
 
               {/* Chat Input Area */}
-              <div className="border-t border-gray-200 px-4 py-4 sm:mb-0">
+              <div className="border-t border-gray-200 px-4 py-4 sm:mb-0 relative">
                 <div className="relative overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-sky-500">
                   <textarea
                     rows={2}
@@ -204,6 +204,9 @@ export default function Home() {
                     }}
                     onInput={onInput}
                   />
+                </div>
+                <div className="absolute -top-6 left-4 text-white text-sm">
+                  {isOtherUserTyping ? `${chattingWithUser?.login} is typing...` : ""}
                 </div>
               </div>
             </div>
