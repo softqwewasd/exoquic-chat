@@ -1,14 +1,14 @@
 import { useSearchParams } from "next/navigation";
 import { useCurrentOrganization } from "./useCurrentOrganization";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useOrganizationMembers } from "./useOrganizationMembers";
 import { SubscriptionManager } from "@exoquic/sub"
 
-const subscriptionManager = new SubscriptionManager(async ({ organizationId, username }) => {
+const subscriptionManager = new SubscriptionManager(async ({ organizationId, username, topic }) => {
   const response = await fetch("/api/v1/authorize-subscribers", {
     method: "POST",
-    body: JSON.stringify({ organizationId, username }),
+    body: JSON.stringify({ organizationId, username, topic }),
   });
   const data = await response.json();
   return data.subscriptionToken;
@@ -38,17 +38,19 @@ export function useChat() {
 
 		setChattingWithUser(member);
 
-		let subscriber;
+		let chatMessagesSubscriber;
+		let chatActivitySubscriber;
 		// Get chat messages from exoquic
 		const getChatMessages = async () => {
       try {
 				console.log("Getting chat messages for", member.login);
-				subscriber = await subscriptionManager.authorizeSubscriber({
+				chatMessagesSubscriber = await subscriptionManager.authorizeSubscriber({
 					organizationId: currentOrganization.id,
 					username: member.login,
+					topic: "chat",
 				});
 
-				subscriber.subscribe(chatMessage => {
+				chatMessagesSubscriber.subscribe(chatMessage => {
 					console.log("Chat message received", chatMessage.data);
 					setChatMessages(prevMessages => [...prevMessages, JSON.parse(chatMessage.data)]);
 				});
@@ -58,12 +60,30 @@ export function useChat() {
       }
     };
 
-    getChatMessages(); // Fetch the subscription token
+    getChatMessages(); // Fetch the subscription token for chat messages
+
+		const getChatActivity = async () => {
+			chatActivitySubscriber = await subscriptionManager.authorizeSubscriber({
+				organizationId: currentOrganization.id,
+				username: session.user.login,
+				topic: "chat-activity",
+			});
+
+			chatActivitySubscriber.subscribe(chatActivity => {
+				console.log("Chat activity received", chatActivity.data);
+			});
+		};
+
+		getChatActivity(); // Fetch the subscription token for chat activity
 
 		return () => {
-			if (subscriber) {
+			if (chatMessagesSubscriber) {
 				console.log("Unsubscribing from chat messages for", member.login);
-				subscriber.unsubscribe();
+				chatMessagesSubscriber.unsubscribe();
+			}
+			if (chatActivitySubscriber) {
+				console.log("Unsubscribing from chat activity for", session.user.login);
+				chatActivitySubscriber.unsubscribe();
 			}
 			setChatMessages([]);
 			setChattingWithUser(null);
