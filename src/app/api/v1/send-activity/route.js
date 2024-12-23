@@ -22,9 +22,6 @@ export async function POST(request) {
 
     await exoquicPublisher.publish({ topic: "chat-activity", payload: JSON.stringify(payload), channel });
 		
-		// TEMPORARY!!
-		await exoquicPublisher.publish({ topic: "chat-activity", payload: JSON.stringify(payload), channel: `chat-activity-for-${session.user.login}-in-${organizationId}` });
-		
 		return NextResponse.json({ message: "OK" });
   } catch (error) {
     console.error('Error in send message API:', error);
