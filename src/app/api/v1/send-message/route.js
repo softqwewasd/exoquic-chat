@@ -15,7 +15,7 @@ export async function POST(request) {
     await exoquicPublisher.publish({ topic: "chat", payload: JSON.stringify({ message, from: session.user.login }), channel });
     
 		// Send a 'message-received' event to the user
-		await exoquicPublisher.publish({ topic: "chat-activity", payload: JSON.stringify({ activity: "message-received", by: session.user.login }), channel: `chat-activity-for-${username}-in-${organizationId}` });
+		await exoquicPublisher.publish({ topic: "chat-activity", payload: JSON.stringify({ activity: "message-received", by: session.user.login }), channel: `chat-activity-message-received-for-${username}-in-${organizationId}` });
 
 		return NextResponse.json({ message: "OK" });
   } catch (error) {

@@ -34,15 +34,16 @@ export function useChatActivity() {
 		if (!member) return;
 
 		// Fetches the subscription token and subscribes to the chat activity topic
-		let chatActivitySubscriber;
-		const getChatActivity = async () => {
-			chatActivitySubscriber = await subscriptionManager.authorizeSubscriber({
+		let chatActivityForTypingSubscriber;
+		let chatActivityForMessageReceivedSubscriber;
+		const getChatActivityForTyping = async () => {
+			chatActivityForTypingSubscriber = await subscriptionManager.authorizeSubscriber({
 				organizationId: currentOrganization.id,
 				username: session.user.login,
 				topic: "chat-activity-typing",
 			});
 
-			chatActivitySubscriber.subscribe(chatActivity => {
+			chatActivityForTypingSubscriber.subscribe(chatActivity => {
 				const activityData = JSON.parse(chatActivity.data);
 
 				if (activityData.by === chattingWithUser && activityData.activity === "typing-started") {
@@ -50,20 +51,38 @@ export function useChatActivity() {
 				} else if (activityData.by === chattingWithUser && activityData.activity === "typing-stopped") {
 					setIsOtherUserTyping(false);
 				}
+			});
+			
+		};
 
+		const getChatActivityForMessageReceived = async () => {
+			chatActivityForMessageReceivedSubscriber = await subscriptionManager.authorizeSubscriber({
+				organizationId: currentOrganization.id,
+				username: session.user.login,
+				topic: "chat-activity-message-received",
+			});
+
+			chatActivityForMessageReceivedSubscriber.subscribe(chatActivity => {
+				console.log("Chat activity for message received:", chatActivity);
+				const activityData = JSON.parse(chatActivity.data);
 				if (activityData.by !== session.user.login && activityData.activity === "message-received") {
-					setMissedMessages(prev => ({ ...prev, [chattingWithUser]: missedMessages[chattingWithUser] + 1 }));
+					setMissedMessages(prev => ({ ...prev, [chattingWithUser]: (prev[chattingWithUser] ?? 0) + 1 }));
 				}
 			});
 		};
 
-		getChatActivity();
+		getChatActivityForTyping();
+		getChatActivityForMessageReceived();
 
 		// Unsubscribe from the chat activity topic when the component unmounts
 		return () => {
-			if (chatActivitySubscriber) {
+			if (chatActivityForTypingSubscriber) {
 				console.log("Unsubscribing from chat activity for", session.user.login);
-				chatActivitySubscriber.unsubscribe();
+				chatActivityForTypingSubscriber.unsubscribe();
+			}
+			if (chatActivityForMessageReceivedSubscriber) {
+				console.log("Unsubscribing from chat activity for", session.user.login);
+				chatActivityForMessageReceivedSubscriber.unsubscribe();
 			}
 			setIsTyping(false);
 		};

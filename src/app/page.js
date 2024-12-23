@@ -31,6 +31,8 @@ export default function Home() {
     delay: 500 // optional, defaults to 500ms
   });
 
+  console.log("Missed messages:", missedMessages);
+
   useEffect(() => {
     if (!currentOrganization && organizations.length > 0) {
       setCurrentOrganization(organizations[0]);

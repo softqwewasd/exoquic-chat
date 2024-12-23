@@ -50,14 +50,14 @@ async function handleChatSubscription(session, organizationId, username) {
 
 // Handle subscriptions to the 'chat-activity' topic
 async function handleChatActivityTypingSubscription(session, organizationId) {
-  const channel = `chat-activity-for-${session.user.login}-in-${organizationId}`;
+  const channel = `chat-activity-typing-for-${session.user.login}-in-${organizationId}`;
   // Reset from latest event because we don't care about the history of 'typing-started' and 'typing-stopped' events.
   const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat-activity", channel, resetFrom: "latest" });
   return NextResponse.json({ subscriptionToken });
 }
 
 async function handleChatActivityMessageReceivedSubscription(session, organizationId) {
-  const channel = `chat-activity-for-${session.user.login}-in-${organizationId}`;
+  const channel = `chat-activity-message-received-for-${session.user.login}-in-${organizationId}`;
   // Reset from earliest event because we want to get all the 'message-received' and 'message-read' events.
   const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat-activity", channel, resetFrom: "earliest" });
   return NextResponse.json({ subscriptionToken });

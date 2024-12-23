@@ -13,7 +13,7 @@ export async function POST(request) {
 			return NextResponse.json({ error: 'Invalid activity' }, { status: 400 });
 		}
 
-    const channel = `chat-activity-for-${username}-in-${organizationId}`;
+    const channel = `chat-activity-typing-for-${username}-in-${organizationId}`;
 
 		const payload = {
 			activity: activity,
