@@ -37,7 +37,7 @@ export function useChatActivity() {
 			chatActivitySubscriber = await subscriptionManager.authorizeSubscriber({
 				organizationId: currentOrganization.id,
 				username: session.user.login,
-				topic: "chat-activity",
+				topic: "chat-activity-typing",
 			});
 
 			chatActivitySubscriber.subscribe(chatActivity => {

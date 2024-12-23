@@ -24,8 +24,12 @@ export async function POST(request) {
     }
 
     // Handle chat activity subscriptions
-    if (topic == "chat-activity") {
-      return handleChatActivitySubscription(session, organizationId, username);
+    if (topic == "chat-activity-typing") {
+      return handleChatActivityTypingSubscription(session, organizationId);
+    }
+
+    if (topic == "chat-activity-message-received") {
+      return handleChatActivityMessageReceivedSubscription(session, organizationId);
     }
 
     return NextResponse.json({ error: 'Invalid topic' }, { status: 400 });
@@ -45,8 +49,16 @@ async function handleChatSubscription(session, organizationId, username) {
 }
 
 // Handle subscriptions to the 'chat-activity' topic
-async function handleChatActivitySubscription(session, organizationId, username) {
+async function handleChatActivityTypingSubscription(session, organizationId) {
   const channel = `chat-activity-for-${session.user.login}-in-${organizationId}`;
+  // Reset from latest event because we don't care about the history of 'typing-started' and 'typing-stopped' events.
   const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat-activity", channel, resetFrom: "latest" });
+  return NextResponse.json({ subscriptionToken });
+}
+
+async function handleChatActivityMessageReceivedSubscription(session, organizationId) {
+  const channel = `chat-activity-for-${session.user.login}-in-${organizationId}`;
+  // Reset from earliest event because we want to get all the 'message-received' and 'message-read' events.
+  const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat-activity", channel, resetFrom: "earliest" });
   return NextResponse.json({ subscriptionToken });
 }
