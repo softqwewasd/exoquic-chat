@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@exoquic/auth": "^1.1.0",
+    "@exoquic/auth": "^1.1.2",
     "@exoquic/pub": "^1.0.2",
     "@exoquic/sub": "^1.0.7",
     "@headlessui/react": "^2.2.0",
