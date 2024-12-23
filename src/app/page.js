@@ -171,7 +171,7 @@ export default function Home() {
                           className="size-8 rounded-full"
                         />
                         <div className="bg-slate-400 rounded-2xl rounded-tl-none px-4 py-2 max-w-[80%]">
-                          <p className="text-gray-900" key={index}>{chatMessage.message}</p>
+                          <p className="text-gray-900" key={uuidv4()}>{chatMessage.message}</p>
                         </div>
                       </div>
                     )
