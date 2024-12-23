@@ -166,7 +166,7 @@ export default function Home() {
                     return (
                       <div className="flex items-start space-x-3" key={uuidv4()}>
                         <img
-                          src={chatMessage.from.avatar_url}
+                          src={chattingWithUser?.avatar_url}
                           alt=""
                           className="size-8 rounded-full"
                         />
