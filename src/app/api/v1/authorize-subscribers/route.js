@@ -47,6 +47,6 @@ async function handleChatSubscription(session, organizationId, username) {
 // Handle subscriptions to the 'chat-activity' topic
 async function handleChatActivitySubscription(session, organizationId, username) {
   const channel = `chat-activity-for-${session.user.login}-in-${organizationId}`;
-  const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat-activity", channel });
+  const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat-activity", channel, resetFrom: "latest" });
   return NextResponse.json({ subscriptionToken });
 }
