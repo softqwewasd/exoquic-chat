@@ -77,7 +77,7 @@ export function useChatActivity() {
 		// Send the chat activity to the server
 		fetch("/api/v1/send-activity", {
 			method: "POST",
-			body: JSON.stringify({ organizationId: currentOrganization.id, username: session.user.login, activity: isTyping ? "typing-started" : "typing-stopped" }),
+			body: JSON.stringify({ organizationId: currentOrganization.id, username: member.login, activity: isTyping ? "typing-started" : "typing-stopped" }),
 		});
 	}, [isTyping]);
 
