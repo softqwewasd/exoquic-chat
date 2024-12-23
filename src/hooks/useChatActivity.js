@@ -19,6 +19,8 @@ export function useChatActivity() {
 	// Whether the user they're chatting with is typing
 	const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
 
+	const [missedMessages, setMissedMessages] = useState({});
+
 	// useEffect for subscribing to the chat activity topic
 	useEffect(() => {
 		if (!currentOrganization) return;
@@ -42,8 +44,15 @@ export function useChatActivity() {
 
 			chatActivitySubscriber.subscribe(chatActivity => {
 				const activityData = JSON.parse(chatActivity.data);
-				if (activityData.by === chattingWithUser) {
-					setIsOtherUserTyping(activityData.activity === "typing-started");
+
+				if (activityData.by === chattingWithUser && activityData.activity === "typing-started") {
+					setIsOtherUserTyping(true);
+				} else if (activityData.by === chattingWithUser && activityData.activity === "typing-stopped") {
+					setIsOtherUserTyping(false);
+				}
+
+				if (activityData.by !== session.user.login && activityData.activity === "message-received") {
+					setMissedMessages(prev => ({ ...prev, [chattingWithUser]: missedMessages[chattingWithUser] + 1 }));
 				}
 			});
 		};
@@ -84,6 +93,7 @@ export function useChatActivity() {
 	return {
 		isTyping,
 		isOtherUserTyping,
-		setIsTyping
+		setIsTyping,
+		missedMessages,
 	}
 }

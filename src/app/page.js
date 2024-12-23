@@ -24,7 +24,7 @@ export default function Home() {
   const teams = useTeams(organizations[0]?.id);
   const { currentOrganization, setCurrentOrganization } = useCurrentOrganization();
   const { chattingWithUser, chatMessages, sendMessage } = useChat();
-  const { setIsTyping, isOtherUserTyping } = useChatActivity();
+  const { setIsTyping, isOtherUserTyping, missedMessages } = useChatActivity();
   const messagesEndRef = useRef(null);
   const { onInput } = useTypingIndicator({
     onTypingChange: setIsTyping,
@@ -241,6 +241,7 @@ export default function Home() {
               >
                 <img src={member.avatar_url} alt="" className="size-8 rounded-full" />
                 <span className="text-white text-sm">{member.login}</span>
+                <span className="text-white text-sm">{missedMessages[member.login]}</span>
               </button>
             ))}
           </div>
