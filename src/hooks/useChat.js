@@ -3,16 +3,7 @@ import { useCurrentOrganization } from "./useCurrentOrganization";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { useOrganizationMembers } from "./useOrganizationMembers";
-import { SubscriptionManager } from "@exoquic/sub"
-
-const subscriptionManager = new SubscriptionManager(async ({ organizationId, username, topic }) => {
-  const response = await fetch("/api/v1/authorize-subscribers", {
-    method: "POST",
-    body: JSON.stringify({ organizationId, username, topic }),
-  });
-  const data = await response.json();
-  return data.subscriptionToken;
-}, { env: "dev" });
+import { subscriptionManager } from "@/lib/exoquic_client";
 
 export function useChat() {
   const { data: session } = useSession();
@@ -21,7 +12,10 @@ export function useChat() {
 	const { currentOrganization } = useCurrentOrganization();
 	const members = useOrganizationMembers(currentOrganization?.id);
 
+	// The user we are chatting with
 	const [chattingWithUser, setChattingWithUser] = useState(null);
+	
+	// The messages in the chat
 	const [chatMessages, setChatMessages] = useState([]);
 	
 

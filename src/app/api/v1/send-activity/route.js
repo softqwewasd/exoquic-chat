@@ -1,21 +1,29 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import { exoquicPublisher } from "@/lib/exoquic";
+import { exoquicPublisher } from "@/lib/exoquic_server";
 
 export async function POST(request) {
   try {
     const session = await getServerSession(authOptions);
 
-    const { organizationId, activity } = await request.json();
+    const { organizationId, username, activity } = await request.json();
 
 		if (activity !== "typing-started" && activity !== "typing-stopped") {
 			return NextResponse.json({ error: 'Invalid activity' }, { status: 400 });
 		}
 
-    const channel = `chat-activity-for-${session.user.login}-in-${organizationId}`;
+    const channel = `chat-activity-for-${username}-in-${organizationId}`;
 
-    await exoquicPublisher.publish({ topic: "chat-activity", payload: JSON.stringify({ activity }), channel });
+		const payload = {
+			activity: activity,
+			by: session.user.login,
+		}
+
+    await exoquicPublisher.publish({ topic: "chat-activity", payload: JSON.stringify(payload), channel });
+		
+		// TEMPORARY!!
+		await exoquicPublisher.publish({ topic: "chat-activity", payload: JSON.stringify(payload), channel: `chat-activity-for-${session.user.login}-in-${organizationId}` });
 		
 		return NextResponse.json({ message: "OK" });
   } catch (error) {

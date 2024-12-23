@@ -13,6 +13,8 @@ import { useCurrentOrganization } from '@/hooks/useCurrentOrganization'
 import { useChat } from '@/hooks/useChat'
 import { useSession } from 'next-auth/react'
 import { v4 as uuidv4 } from 'uuid';
+import { useChatActivity } from '@/hooks/useChatActivity'
+import { useTypingIndicator } from '@/hooks/useTypingIndicator'
 
 export default function Home() {
   const { data: session } = useSession();
@@ -22,7 +24,12 @@ export default function Home() {
   const teams = useTeams(organizations[0]?.id);
   const { currentOrganization, setCurrentOrganization } = useCurrentOrganization();
   const { chattingWithUser, chatMessages, sendMessage } = useChat();
+  const { isTyping, setIsTyping } = useChatActivity();
   const messagesEndRef = useRef(null);
+  const { onInput } = useTypingIndicator({
+    onTypingChange: setIsTyping,
+    delay: 500 // optional, defaults to 500ms
+  });
 
   useEffect(() => {
     if (!currentOrganization && organizations.length > 0) {
@@ -190,12 +197,12 @@ export default function Home() {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         if (!e.shiftKey) {
-                          e.preventDefault(); // Prevent default enter behavior
-                          // Assuming you have a sendMessage function
+                          e.preventDefault();
                           sendMessage(e.target.value);
                         }
                       }
                     }}
+                    onInput={onInput}
                   />
                 </div>
               </div>
