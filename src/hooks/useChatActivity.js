@@ -83,6 +83,7 @@ export function useChatActivity() {
 			if (chatActivityForMessageReceivedSubscriber) {
 				console.log("Unsubscribing from chat activity for", session.user.login);
 				chatActivityForMessageReceivedSubscriber.unsubscribe();
+				setMissedMessages({});
 			}
 			setIsTyping(false);
 		};
