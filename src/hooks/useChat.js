@@ -1,12 +1,10 @@
 import { useSearchParams } from "next/navigation";
 import { useCurrentOrganization } from "./useCurrentOrganization";
-import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { useOrganizationMembers } from "./useOrganizationMembers";
 import { subscriptionManager } from "@/lib/exoquic_client";
 
 export function useChat() {
-  const { data: session } = useSession();
 	const searchParams = useSearchParams();
 
 	const { currentOrganization } = useCurrentOrganization();
@@ -18,23 +16,22 @@ export function useChat() {
 	// The messages in the chat
 	const [chatMessages, setChatMessages] = useState([]);
 	
-
+	// useEffect for subscribing to the chat messages topic, i.e. retrieving all the old
+	// chat messages between the two users and all the new messages, storing them in the
+	// chatMessages state.
   useEffect(() => {
     if (!currentOrganization) return;
 
-		// Get the user to chat with from the search params
 		const chattingWithUser = searchParams.get('chattingWithUser');
 		if (!chattingWithUser) return;
 
-		// Make sure the user is a member of the organization
 		const member = members.find(member => member.login === chattingWithUser);
 		if (!member) return;
 
 		setChattingWithUser(member);
 
 		let chatMessagesSubscriber;
-		let chatActivitySubscriber;
-		// Get chat messages from exoquic
+
 		const getChatMessages = async () => {
       try {
 				console.log("Getting chat messages for", member.login);
