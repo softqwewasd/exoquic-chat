@@ -21,6 +21,7 @@ export function useChatActivity() {
 
 	const [missedMessages, setMissedMessages] = useState({});
 
+
 	// useEffect for subscribing to the chat activity topic
 	useEffect(() => {
 		if (!currentOrganization) return;
@@ -63,10 +64,12 @@ export function useChatActivity() {
 			});
 
 			chatActivityForMessageReceivedSubscriber.subscribe(chatActivity => {
-				console.log("Chat activity for message received:", chatActivity);
 				const activityData = JSON.parse(chatActivity.data);
 				if (activityData.by !== session.user.login && activityData.activity === "message-received") {
-					setMissedMessages(prev => ({ ...prev, [chattingWithUser]: (prev[chattingWithUser] ?? 0) + 1 }));
+					setMissedMessages(prev => ({ ...prev, [activityData.by]: (prev[activityData.by] ?? 0) + 1 }));
+				}
+				if (activityData.by === session.user.login && activityData.activity === "messages-read") {
+					setMissedMessages(prev => ({ ...prev, [activityData.for]: 0 }));
 				}
 			});
 		};
@@ -109,6 +112,19 @@ export function useChatActivity() {
 			body: JSON.stringify({ organizationId: currentOrganization.id, username: member.login, activity: isTyping ? "typing-started" : "typing-stopped" }),
 		});
 	}, [isTyping]);
+
+	useEffect(() => {
+		const chattingWithUser = searchParams.get('chattingWithUser');
+		if (chattingWithUser && missedMessages[chattingWithUser] > 0) {
+			const sendMessageReadActivity = async () => {
+				await fetch("/api/v1/send-activity", {
+					method: "POST",
+					body: JSON.stringify({ organizationId: currentOrganization.id, activity: "messages-read", username: chattingWithUser }),
+				});
+			}
+			sendMessageReadActivity();
+		}
+	}, [missedMessages[searchParams.get('chattingWithUser') ?? ''] ?? null, searchParams.get('chattingWithUser')]);
 
 	return {
 		isTyping,

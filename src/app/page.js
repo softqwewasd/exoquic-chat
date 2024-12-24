@@ -31,8 +31,7 @@ export default function Home() {
     delay: 500 // optional, defaults to 500ms
   });
 
-  console.log("Missed messages:", missedMessages);
-
+  
   useEffect(() => {
     if (!currentOrganization && organizations.length > 0) {
       setCurrentOrganization(organizations[0]);
@@ -243,7 +242,11 @@ export default function Home() {
               >
                 <img src={member.avatar_url} alt="" className="size-8 rounded-full" />
                 <span className="text-white text-sm">{member.login}</span>
-                <span className="text-white text-sm">{missedMessages[member.login]}</span>
+                {
+                  missedMessages[member.login] > 0 && (
+                    <span className="text-white text-sm">{missedMessages[member.login]}</span>
+                  )
+                }
               </button>
             ))}
           </div>
