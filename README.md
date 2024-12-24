@@ -2,6 +2,12 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+### Prerequisites
+* Setup a Github OAuth application and add the client id and secret to the .env file
+* Generate an ExoQuic API key and add it to the .env file
+
+### Starting the app (Nextjs default docs)
+
 First, run the development server:
 
 ```bash
