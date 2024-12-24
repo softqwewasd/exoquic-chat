@@ -12,31 +12,25 @@ export function useChatActivity() {
 	const { currentOrganization } 	= useCurrentOrganization();
 	const members 									= useOrganizationMembers(currentOrganization?.id);
 
-	// Whether this user is typing, sends an chat-activity to the server
-	// when the state changes.
 	const [isTyping, setIsTyping] 	= useState(false);
-
-	// Whether the user they're chatting with is typing
 	const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
-
 	const [missedMessages, setMissedMessages] = useState({});
 
 
-	// useEffect for subscribing to the chat activity topic
+	// useEffect for subscribing to the chat activity topic. We create two subscribers,
+	// one for the typing events and one for the 'message received' and 'message read' events.
 	useEffect(() => {
 		if (!currentOrganization) return;
 
-		// Get the user to chat with from the search params
 		const chattingWithUser = searchParams.get('chattingWithUser');
 		if (!chattingWithUser) return;
 
-		// Make sure the user is a member of the organization
 		const member = members.find(member => member.login === chattingWithUser);
 		if (!member) return;
 
-		// Fetches the subscription token and subscribes to the chat activity topic
 		let chatActivityForTypingSubscriber;
 		let chatActivityForMessageReceivedSubscriber;
+		
 		const getChatActivityForTyping = async () => {
 			chatActivityForTypingSubscriber = await subscriptionManager.authorizeSubscriber({
 				organizationId: currentOrganization.id,
@@ -95,24 +89,22 @@ export function useChatActivity() {
 
 	// useEffect for sending a chat-activity to Exoquic when the user starts or stops typing
 	useEffect(() => {
-		// Make sure the user is chatting with someone
 		const chattingWithUser = searchParams.get('chattingWithUser');
 		if (!chattingWithUser) return;
 
-		// Make sure the user is a member of the organization
 		const member = members.find(member => member.login === chattingWithUser);
 		if (!member) return;
 
-		// Make sure we're in an organization
 		if (!currentOrganization) return;
 
-		// Send the chat activity to the server
 		fetch("/api/v1/send-activity", {
 			method: "POST",
 			body: JSON.stringify({ organizationId: currentOrganization.id, username: member.login, activity: isTyping ? "typing-started" : "typing-stopped" }),
 		});
 	}, [isTyping]);
 
+	// useEffect for sending a chat-activity to Exoquic when the user reads messages. It is assumed
+	// that the user has read all the messages when they open the chat with the user.
 	useEffect(() => {
 		const chattingWithUser = searchParams.get('chattingWithUser');
 		if (chattingWithUser && missedMessages[chattingWithUser] > 0) {
