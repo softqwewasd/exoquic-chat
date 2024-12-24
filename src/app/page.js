@@ -31,6 +31,7 @@ export default function Home() {
     delay: 500 // optional, defaults to 500ms
   });
 
+  const [inputValue, setInputValue] = useState('');
   
   useEffect(() => {
     if (!currentOrganization && organizations.length > 0) {
@@ -200,9 +201,12 @@ export default function Home() {
                         if (!e.shiftKey) {
                           e.preventDefault();
                           sendMessage(e.target.value);
+                          setInputValue('');
                         }
                       }
                     }}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
                     onInput={onInput}
                   />
                 </div>
