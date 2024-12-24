@@ -23,7 +23,7 @@ export default function Home() {
   const members = useOrganizationMembers(organizations[0]?.id);
   const teams = useTeams(organizations[0]?.id);
   const { currentOrganization, setCurrentOrganization } = useCurrentOrganization();
-  const { chattingWithUser, chatMessages, sendMessage } = useChat();
+  const { chattingWithUser, chattingWithTeam, chatMessages, sendMessage } = useChat();
   const { setIsTyping, isOtherUserTyping, missedMessages } = useChatActivity();
   const messagesEndRef = useRef(null);
   const { onInput } = useTypingIndicator({
@@ -111,6 +111,12 @@ export default function Home() {
                   {teams.map((team) => (
                     <button
                       key={team.id}
+                      onClick={() => {
+                        const searchParams = new URLSearchParams(window.location.search);
+                        searchParams.set('chattingWithTeam', team.id);
+                        searchParams.set('chattingWithUser', null);
+                        window.history.pushState(null, '', `?${searchParams.toString()}`);
+                      }}
                       className="w-full rounded-md px-3 py-2 text-left text-white text-sm hover:bg-gray-800 transition-colors duration-200"
                     >
                       {team.name}
@@ -146,13 +152,19 @@ export default function Home() {
               <div className="pb-4 mb-4 border-b border-gray-700">
                 <div className="flex items-center space-x-3">
                   {/* Avatar (for user chats) */}
-                  <img
-                    src={chattingWithUser?.avatar_url}
-                    alt=""
-                    className="size-10 rounded-full"
-                  />
+                  {chattingWithUser && (
+                    <img
+                      src={chattingWithUser?.avatar_url}
+                      alt=""
+                      className="size-10 rounded-full"
+                    />
+                  )}
                   <div>
-                    <h2 className="text-lg font-semibold text-white">{chattingWithUser?.login}</h2>
+                    {chattingWithUser ? (
+                      <h2 className="text-lg font-semibold text-white">{chattingWithUser?.login}</h2>
+                    ) : (
+                      <h2 className="text-lg font-semibold text-white">{chattingWithTeam?.name}</h2>
+                    )}
                   </div>
                 </div>
               </div>
@@ -161,7 +173,7 @@ export default function Home() {
               <div className="flex-1 overflow-y-auto space-y-4 pb-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-900 [&::-webkit-scrollbar-thumb]:rounded-full">
                 {/* Example messages - you'll want to map through your actual messages */}
                 {/* Received Message */}
-                {chatMessages.map((chatMessage) => {
+                {chattingWithUser && chatMessages.map((chatMessage) => {
                   const isReceivedMessage = chatMessage.from !== session.user.login;
 
                   if (isReceivedMessage) {
@@ -186,6 +198,32 @@ export default function Home() {
                     </div>
                   );
                 })}
+
+                {chattingWithTeam && chatMessages.map((chatMessage) => {
+                  if (chatMessage.from !== session.user.login) {
+                    return (
+                      <div className="flex items-start space-x-3" key={uuidv4()}>
+                        <img
+                          src={members.find(member => member.login === chatMessage.from)?.avatar_url}
+                          alt=""
+                          className="size-8 rounded-full"
+                        />
+                        <div className="bg-slate-400 rounded-2xl rounded-tl-none px-4 py-2 max-w-[80%]">
+                          <p className="text-gray-900" key={uuidv4()}>{chatMessage.message}</p>
+                        </div>
+                      </div>
+                    )
+                  }
+                  
+                  return (
+                    <div className="flex justify-end mr-2" key={uuidv4()}>
+                      <div className="bg-sky-500 rounded-2xl rounded-tr-none px-4 py-2 max-w-[80%]">
+                        <p className="text-white">{chatMessage.message}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+
                 <div ref={messagesEndRef} />
               </div>
 
@@ -267,6 +305,12 @@ export default function Home() {
           <div className="space-y-1">
             {teams.map((team) => (
               <button
+                onClick={() => {
+                  const searchParams = new URLSearchParams(window.location.search);
+                  searchParams.set('chattingWithTeam', team.id);
+                  searchParams.set('chattingWithUser', null);
+                  window.history.pushState(null, '', `?${searchParams.toString()}`);
+                }}
                 key={team.id}
                 className="w-full rounded-md px-3 py-2 text-left text-white text-sm hover:bg-gray-800 transition-colors duration-200"
               >

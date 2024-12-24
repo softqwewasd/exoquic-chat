@@ -135,5 +135,5 @@ export function useChat() {
 		});
 	}, [currentOrganization, chattingWithUser, chattingWithTeam]);
 
-  return { chattingWithUser, chatMessages, sendMessage };
+  return { chattingWithUser, chatMessages, sendMessage, chattingWithTeam };
 }
