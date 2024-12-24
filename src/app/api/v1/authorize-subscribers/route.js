@@ -16,11 +16,15 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const { organizationId, username, topic } = await request.json();
+    const { organizationId, username, topic, teamId } = await request.json();
 
     // Handle chat subscriptions
-    if (topic == "chat") {
-      return handleChatSubscription(session, organizationId, username);
+    if (topic == "chat" && !teamId && username) {
+      return handleDirectChatSubscription(session, organizationId, username);
+    }
+
+    if (topic == "chat" && teamId && !username) {
+      return handleTeamChatSubscription(session, organizationId, teamId);
     }
 
     // Handle chat activity subscriptions
@@ -41,9 +45,15 @@ export async function POST(request) {
 }
 
 // Handle subscriptions to the 'chat' topic
-async function handleChatSubscription(session, organizationId, username) {
+async function handleDirectChatSubscription(session, organizationId, username) {
   const usernames = [session.user.login, username].sort();
   const channel = `chat-for-${organizationId}-between-users-${usernames[0]}-and-${usernames[1]}`;
+  const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat", channel });
+  return NextResponse.json({ subscriptionToken });
+}
+
+async function handleTeamChatSubscription(session, organizationId, teamId) {
+  const channel = `chat-for-${organizationId}-for-team-${teamId}`;
   const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat", channel });
   return NextResponse.json({ subscriptionToken });
 }
