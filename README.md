@@ -1,5 +1,5 @@
 # A simple chat app with Github Organizations built on Exoquic MVP.
-
+https://exoquic.com
 ## What is this demonstrating?
 The ease of building and maintaining a chat app with Exoquic and how different chat-like features can be implemented, such as typing indicator, message read status, etc.
 
