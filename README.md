@@ -1,4 +1,17 @@
+# A simple chat app with Github Organizations built on Exoquic MVP.
+
+## What is this demonstrating?
+The ease of building and maintaining a chat app with Exoquic and how different chat-like features can be implemented, such as typing indicator, message read status, etc.
+
+### Features:
+- Real time direct chat with Github users
+- Real time group chat with Github teams
+- Chat history
+
+All of these features are implemented without the use of a database, just Exoquic.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
 
 ## Getting Started
 
