@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 
 import * as exoquicAuth from "@exoquic/auth";
 import { authOptions } from '../../auth/[...nextauth]/route';
+import { v4 } from 'uuid';
 
 // Initialize the subscription authorizer with your API key
 exoquicAuth.initSubscriptionAuthorizer({ apiKey: process.env.EXOQUIC_API_KEY });
@@ -17,14 +18,16 @@ export async function POST(request) {
     }
     
     const { organizationId, username, topic, teamId } = await request.json();
-
+    
     // Handle chat subscriptions
     if (topic == "chat" && !teamId && username) {
-      return handleDirectChatSubscription(session, organizationId, username);
+      const subscriptionId = v4();
+      return handleDirectChatSubscription(session, organizationId, username, subscriptionId);
     }
 
     if (topic == "chat" && teamId && !username) {
-      return handleTeamChatSubscription(session, organizationId, teamId);
+      const subscriptionId = v4();
+      return handleTeamChatSubscription(session, organizationId, teamId, subscriptionId);
     }
 
     // Handle chat activity subscriptions
@@ -33,7 +36,8 @@ export async function POST(request) {
     }
 
     if (topic == "chat-activity-message-received") {
-      return handleChatActivityMessageReceivedSubscription(session, organizationId);
+      const subscriptionId = v4();
+      return handleChatActivityMessageReceivedSubscription(session, organizationId, subscriptionId);
     }
 
     return NextResponse.json({ error: 'Invalid topic' }, { status: 400 });
@@ -45,16 +49,16 @@ export async function POST(request) {
 }
 
 // Handle subscriptions to the 'chat' topic
-async function handleDirectChatSubscription(session, organizationId, username) {
+async function handleDirectChatSubscription(session, organizationId, username, subscriptionId) {
   const usernames = [session.user.login, username].sort();
   const channel = `chat-for-${organizationId}-between-users-${usernames[0]}-and-${usernames[1]}`;
-  const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat", channel });
+  const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat", channel, subscriptionId });
   return NextResponse.json({ subscriptionToken });
 }
 
-async function handleTeamChatSubscription(session, organizationId, teamId) {
+async function handleTeamChatSubscription(session, organizationId, teamId, subscriptionId) {
   const channel = `chat-for-${organizationId}-for-team-${teamId}`;
-  const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat", channel });
+  const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat", channel, subscriptionId });
   return NextResponse.json({ subscriptionToken });
 }
 
@@ -66,9 +70,9 @@ async function handleChatActivityTypingSubscription(session, organizationId) {
   return NextResponse.json({ subscriptionToken });
 }
 
-async function handleChatActivityMessageReceivedSubscription(session, organizationId) {
+async function handleChatActivityMessageReceivedSubscription(session, organizationId, subscriptionId) {
   const channel = `chat-activity-message-received-for-${session.user.login}-in-${organizationId}`;
   // Reset from earliest event because we want to get all the 'message-received' and 'message-read' events.
-  const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat-activity", channel, resetFrom: "earliest" });
+  const subscriptionToken = await exoquicAuth.authorizeSubscription({ topic: "chat-activity", channel, resetFrom: "earliest", subscriptionId });
   return NextResponse.json({ subscriptionToken });
 }

@@ -38,8 +38,8 @@ export function useChatActivity() {
 				topic: "chat-activity-typing",
 			});
 
-			chatActivityForTypingSubscriber.subscribe(chatActivity => {
-				const activityData = JSON.parse(chatActivity.data);
+			chatActivityForTypingSubscriber.subscribe(chatActivityBatch => {
+				const activityData = chatActivityBatch.map(chatActivity => JSON.parse(chatActivity));
 
 				if (activityData.by === chattingWithUser && activityData.activity === "typing-started") {
 					setIsOtherUserTyping(true);
@@ -57,13 +57,15 @@ export function useChatActivity() {
 				topic: "chat-activity-message-received",
 			});
 
-			chatActivityForMessageReceivedSubscriber.subscribe(chatActivity => {
-				const activityData = JSON.parse(chatActivity.data);
-				if (activityData.by !== session.user.login && activityData.activity === "message-received") {
-					setMissedMessages(prev => ({ ...prev, [activityData.by]: (prev[activityData.by] ?? 0) + 1 }));
-				}
-				if (activityData.by === session.user.login && activityData.activity === "messages-read") {
-					setMissedMessages(prev => ({ ...prev, [activityData.for]: 0 }));
+			chatActivityForMessageReceivedSubscriber.subscribe(chatActivityBatch => {
+				const activityData = chatActivityBatch.map(chatActivity => JSON.parse(chatActivity));
+				for (const activity of activityData) {
+					if (activity.by !== session.user.login && activity.activity === "message-received") {
+						setMissedMessages(prev => ({ ...prev, [activity.by]: (prev[activity.by] ?? 0) + 1 }));
+					}
+					if (activity.by === session.user.login && activity.activity === "messages-read") {
+						setMissedMessages(prev => ({ ...prev, [activity.for]: 0 }));
+					}
 				}
 			});
 		};

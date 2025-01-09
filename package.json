@@ -11,7 +11,7 @@
   "dependencies": {
     "@exoquic/auth": "^1.1.2",
     "@exoquic/pub": "^1.0.2",
-    "@exoquic/sub": "^1.2.0",
+    "@exoquic/sub": "^1.3.0",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "heroicons": "^2.2.0",

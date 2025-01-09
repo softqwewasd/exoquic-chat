@@ -45,9 +45,10 @@ export function useChat() {
 					topic: "chat",
 				});
 
-				chatMessagesSubscriber.subscribe(chatMessage => {
-					console.log("Chat message received", chatMessage.data);
-					setChatMessages(prevMessages => [...prevMessages, JSON.parse(chatMessage.data)]);
+				chatMessagesSubscriber.subscribe(chatMessagesBatch => {
+					const chatMessages = chatMessagesBatch.map(chatMessage => JSON.parse(chatMessage));
+					console.log("Chat message received", chatMessages);
+					setChatMessages(prevMessages => [...prevMessages, ...chatMessages]);
 				});
 
       } catch (error) {
@@ -90,9 +91,10 @@ export function useChat() {
 					topic: "chat",
 				});
 
-				chatMessagesSubscriber.subscribe(chatMessage => {
-					console.log("Chat message received ", chatMessage.data);
-					setChatMessages(prevMessages => [...prevMessages, JSON.parse(chatMessage.data)]);
+				chatMessagesSubscriber.subscribe(chatMessagesBatch => {
+					const chatMessages = chatMessagesBatch.map(chatMessage => JSON.parse(chatMessage));
+					console.log("Chat message received ", chatMessages);
+					setChatMessages(prevMessages => [...prevMessages, ...chatMessages]);
 				});
 			} catch (error) {
 				console.error('Error fetching subscription token:', error);
